@@ -64,6 +64,7 @@ describe("sum-with-id endpoint", async () => {
       result: 3,
       createdAt: new Date(),
       updatedAt: new Date(),
+      type: "SUM",
     });
 
     const res = await request(app).post("/sum-with-id").send({
@@ -79,6 +80,44 @@ describe("sum-with-id endpoint", async () => {
 
   it("should return 411 if no inputs are provided", async () => {
     const res = await request(app).post("/sum-with-id").send();
+    expect(res.statusCode).toBe(411);
+  });
+});
+
+describe("multiply endpoint", async () => {
+  it("should return the multiplication of two numbers and an id", async () => {
+    prismaClient.request.create.mockResolvedValue({
+      id: 1,
+      a: 3,
+      b: 2,
+      result: 6,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      type: "MULTIPLY",
+    });
+
+    vi.spyOn(prismaClient.request, "create");
+
+    const res = await request(app).post("/multiply").send({
+      a: 3,
+      b: 2,
+    });
+
+    expect(prismaClient.request.create).toHaveBeenCalledWith({
+      data: {
+        a: 3,
+        b: 2,
+        result: 6,
+        type: "MULTIPLY",
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.answer).toBe(6); // Was expecting 3 instead of 6
+  });
+
+  it("should return 411 if no inputs are provided", async () => {
+    const res = await request(app).post("/multiply").send(); // Was using wrong endpoint
     expect(res.statusCode).toBe(411);
   });
 });

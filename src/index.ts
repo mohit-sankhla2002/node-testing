@@ -33,6 +33,7 @@ app.post("/sum", async (req, res) => {
       a,
       b,
       result: sum,
+      type: "SUM",
     },
   });
 
@@ -59,11 +60,41 @@ app.post("/sum-with-id", async (req, res) => {
       a,
       b,
       result: sum,
+      type: "SUM",
     },
   });
 
   res.status(200).json({
     answer: sum,
+    id: dbRequest.id,
+  });
+});
+
+app.post("/multiply", async (req, res) => {
+  const { success, data, error } = await sumValidator.safeParseAsync(req.body);
+
+  if (success === false) {
+    res.status(411).json({
+      error: error?.message,
+    });
+    return;
+  }
+
+  const { a, b } = data;
+
+  const multiplication = a * b;
+
+  const dbRequest = await prismaClient.request.create({
+    data: {
+      a: a,
+      b: b,
+      result: multiplication,
+      type: "MULTIPLY",
+    },
+  });
+
+  res.status(200).json({
+    answer: multiplication,
     id: dbRequest.id,
   });
 });

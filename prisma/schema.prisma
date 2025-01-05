@@ -14,10 +14,16 @@ datasource db {
 }
 
 model Request {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   a         Int
   b         Int
   result    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  type      RequestType
+}
+
+enum RequestType {
+  SUM
+  MULTIPLY
 }
